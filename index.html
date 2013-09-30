@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple socket.io program</title>
+    <script type="text/javascript" src="http://test.local/socketio/js/socket.io.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>Welcome to socket.io world!</h1>
+
+<script type="text/javascript">
+
+    var socket = io.connect('http://localhost:8003');
+    var nick = '';
+
+    function addComment(message) {
+        $('.messages').append("<p>" + message + "</p>");
+    }
+
+    socket.on('clientMessage', function(message) {
+        addComment(message.data);
+    });
+
+    $(function(){
+        $('.sendMessage').on('click', function() {
+            var message = $('[name=text]').val();
+            addComment(nick + ": " + message);
+            socket.emit('broadcastMessage', {
+                'data': message
+            });
+        });
+
+        $('.setNickname').on('click', function() {
+            nick = $('[name=nickname]').val();
+            socket.emit('set nickname', nick);
+        });
+    });
+
+
+</script>
+
+<label for="nickname">Set nickname</label>
+<input type="text" name="nickname" id="nickname"><button class="setNickname" name="submit">Send</button>
+
+
+<div class="messages">
+</div>
+
+<div>
+    <label for="textInput">Send message</label>
+    <input type="text" name="text" id="textInput"><button class="sendMessage" name="submit">Send</button>
+</div>
+
+</body>
+</html>
